@@ -127,58 +127,22 @@ section {
 }
 
 #main-div .inner-div .bat-preview {
-  width: 200px;
-  height: 60px;
+  width: min(45%, 320px);
+  aspect-ratio: 200 / 60;
   border: 2px solid yellow;
-  border-radius: 8px;
+  border-radius: 10px;
   position: relative;
   overflow: hidden;
+  background: rgba(255, 255, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-#main-div .inner-div .bat-preview.orientation-right.view-side {
-  transform: rotate(180deg);
-}
-
-#main-div .inner-div .bat-preview.orientation-left.view-side {
-  transform: none;
-}
-
-#main-div .inner-div .bat-preview.orientation-right.view-top {
-  transform: rotate(180deg);
-}
-
-#main-div .inner-div .bat-preview.orientation-left.view-top {
-  transform: none;
-}
-
-#main-div .inner-div .bat-mask {
-  height: 200px;
-  position: absolute;
-  left: -20px;
-  aspect-ratio: 1374.667 / 1166.667;
-  background: url("image_uploaded.jpg") center top/cover no-repeat;
-  mask: url("morcego_canva_antigo.svg") center/contain no-repeat;
-  -webkit-mask: url("morcego_canva_antigo.svg") center/contain no-repeat;
-}
-
-#main-div .inner-div .bat-mask.orientation-left {
-  transform: scaleX(1);
-}
-
-#main-div .inner-div .bat-mask.orientation-right {
-  transform: scaleX(-1);
-}
-
-#main-div .inner-div .bat-mask.position-top {
-  top: -18px;
-}
-
-#main-div .inner-div .bat-mask.position-middle {
-  top: -70px;
-}
-
-#main-div .inner-div .bat-mask.position-bottom {
-  top: -122px;
+#main-div .inner-div .bat-preview canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 #main-div p {
