@@ -13,13 +13,6 @@
     <main>
       <section>        
         <div class="controls">
-          <label for="position-select">Posição:</label>
-          <select id="position-select">
-            <option value="top" selected>Topo</option>
-            <option value="middle">Meio</option>
-            <option value="bottom">Base</option>
-          </select>
-
           <fieldset class="radio-group" aria-label="Lado">
             <legend>Lado:</legend>
             <label>
@@ -43,6 +36,18 @@
               Topo
             </label>
           </fieldset>
+
+          <fieldset class="radio-group" aria-label="Conteúdo">
+            <legend>Conteúdo:</legend>
+            <label>
+              <input type="radio" name="content" value="image" checked />
+              Imagem
+            </label>
+            <label>
+              <input type="radio" name="content" value="color" />
+              Cor
+            </label>
+          </fieldset>
         </div>
         <div id="main-div">
           <div class="inner-div position-top orientation-left view-side">
@@ -57,14 +62,13 @@
       <small>&copy; 2025 PoC Batman</small>
     </footer>
     <script>
-      const select = document.getElementById('position-select');
       const inner = document.querySelector('.inner-div');
       const preview = document.querySelector('.bat-preview');
       const previewCanvas = document.getElementById('bat-preview-canvas');
       const orientationRadios = document.querySelectorAll('input[name="orientation"]');
       const viewRadios = document.querySelectorAll('input[name="view"]');
+      const contentRadios = document.querySelectorAll('input[name="content"]');
 
-      const positionValues = ['top', 'middle', 'bottom'];
       const orientationValues = ['left', 'right'];
       const viewValues = ['side', 'top'];
 
@@ -81,11 +85,7 @@
         position: 'top',
         orientation: 'left',
         view: 'side',
-      };
-
-      const applyPosition = value => {
-        previewState.position = value;
-        applyModifier([inner], 'position', value, positionValues);
+        content: 'image',
       };
 
       const applyOrientation = value => {
@@ -96,6 +96,11 @@
       const applyView = value => {
         previewState.view = value;
         applyModifier([inner, preview], 'view', value, viewValues);
+      };
+
+      const applyContent = value => {
+        previewState.content = value;
+        applyModifier([preview], 'content', value, ['image', 'color']);
       };
 
       const getRadioValue = name => {
@@ -155,7 +160,7 @@
         ctx.save();
         ctx.translate(rect.width / 2, rect.height / 2);
 
-        if (previewState.orientation === 'right' && (previewState.view === 'side' || previewState.view === 'top')) {
+        if (previewState.orientation === 'right' && previewState.view === 'side') {
           ctx.rotate(Math.PI);
         }
 
@@ -167,10 +172,25 @@
         const maskX = MASK_BASE_LEFT * scale;
         const maskY = (MASK_BASE_TOP[previewState.position] || 0) * scale;
 
-        ctx.drawImage(contentImage, maskX, maskY, maskWidth, maskHeight);
-        ctx.globalCompositeOperation = 'destination-in';
-        ctx.drawImage(maskImage, maskX, maskY, maskWidth, maskHeight);
-        ctx.globalCompositeOperation = 'source-over';
+        if (previewState.content === 'image') {
+          ctx.save();
+          if (previewState.orientation === 'right' && previewState.view === 'top') {
+            ctx.translate(rect.width / 2, rect.height / 2);
+            ctx.rotate(Math.PI);
+            ctx.translate(-rect.width / 2, -rect.height / 2);
+          }
+          ctx.drawImage(contentImage, maskX, maskY, maskWidth, maskHeight);
+          ctx.restore();
+          ctx.globalCompositeOperation = 'destination-in';
+          ctx.drawImage(maskImage, maskX, maskY, maskWidth, maskHeight);
+          ctx.globalCompositeOperation = 'source-over';
+        } else {
+          ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
+          ctx.fillRect(maskX, maskY, maskWidth, maskHeight);
+          ctx.globalCompositeOperation = 'destination-in';
+          ctx.drawImage(maskImage, maskX, maskY, maskWidth, maskHeight);
+          ctx.globalCompositeOperation = 'source-over';
+        }
 
         ctx.restore();
       };
@@ -185,7 +205,7 @@
       const updateState = () => {
         const orientation = getRadioValue('orientation');
         const view = getRadioValue('view');
-        let position = select.value;
+        let position = previewState.position;
 
         if (view === 'side') {
           position = orientation === 'left' ? 'top' : 'bottom';
@@ -193,19 +213,12 @@
           position = 'middle';
         }
 
-        if (select.value !== position) {
-          select.value = position;
-        }
-
-        applyPosition(position);
+        previewState.position = position;
         applyOrientation(orientation);
         applyView(view);
+        applyContent(getRadioValue('content'));
         drawPreview();
       };
-
-      select.addEventListener('change', () => {
-        updateState();
-      });
 
       orientationRadios.forEach(radio => {
         radio.addEventListener('change', () => {
@@ -214,6 +227,12 @@
       });
 
       viewRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+          updateState();
+        });
+      });
+
+      contentRadios.forEach(radio => {
         radio.addEventListener('change', () => {
           updateState();
         });

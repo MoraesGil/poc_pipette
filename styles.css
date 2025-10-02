@@ -89,28 +89,17 @@ section {
   background: url("sar_sarpette_left.png") center/contain no-repeat;
 }
 
-#main-div .inner-div.position-top {
-  background-image: url("sar_sarpette_left.png");
-}
-
-#main-div .inner-div.position-middle {
-  background-image: url("sar_sarpette_left.png");
-}
-
-#main-div .inner-div.position-bottom {
-  background-image: url("sar_sarpette_right.png");
-}
-
-#main-div .inner-div.orientation-left {
-  transform: scaleX(1);
-}
-
+#main-div .inner-div.orientation-left,
 #main-div .inner-div.orientation-right {
-  transform: scaleX(-1);
+  transform: none;
 }
 
-#main-div .inner-div.view-side {
-  background-size: contain;
+#main-div .inner-div.view-side.orientation-left {
+  background-image: url("sar_sarpette_left.png");
+}
+
+#main-div .inner-div.view-side.orientation-right {
+  background-image: url("sar_sarpette_right.png");
 }
 
 #main-div .inner-div.view-top {
@@ -123,7 +112,7 @@ section {
 }
 
 #main-div .inner-div.view-top.orientation-left {
-  transform: scaleX(1);
+  transform: none;
 }
 
 #main-div .inner-div .bat-preview {
@@ -131,12 +120,19 @@ section {
   aspect-ratio: 200 / 60;
   border: 2px solid yellow;
   border-radius: 10px;
-  position: relative;
+  position: absolute;
+  top: 30%;
+  left: 13%;
   overflow: hidden;
   background: rgba(255, 255, 0, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+#main-div .inner-div .bat-preview.orientation-right {
+  top: 29%;
+  left: 45%;
 }
 
 #main-div .inner-div .bat-preview canvas {
