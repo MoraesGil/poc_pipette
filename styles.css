@@ -62,6 +62,7 @@ section {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: url("sar_sarpette_left.png") center/contain no-repeat;
 }
 
 #main-div .inner-div .bat-preview {
