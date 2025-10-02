@@ -21,7 +21,7 @@
           </select>
         </div>
         <div id="main-div">
-          <div class="inner-div">
+          <div class="inner-div position-top">
             <div class="bat-preview">
               <div class="bat-mask position-top"></div>
             </div>
@@ -35,12 +35,16 @@
     <script>
       const select = document.getElementById('position-select');
       const mask = document.querySelector('.bat-mask');
+      const inner = document.querySelector('.inner-div');
 
       const positionClasses = ['position-top', 'position-middle', 'position-bottom'];
 
       select.addEventListener('change', event => {
+        const selected = `position-${event.target.value}`;
         mask.classList.remove(...positionClasses);
-        mask.classList.add(`position-${event.target.value}`);
+        mask.classList.add(selected);
+        inner.classList.remove(...positionClasses);
+        inner.classList.add(selected);
       });
     </script>
   </body>

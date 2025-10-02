@@ -65,6 +65,18 @@ section {
   background: url("sar_sarpette_left.png") center/contain no-repeat;
 }
 
+#main-div .inner-div.position-top {
+  background-image: url("sar_sarpette_left.png");
+}
+
+#main-div .inner-div.position-middle {
+  background-image: url("sar_sarpette_top.png");
+}
+
+#main-div .inner-div.position-bottom {
+  background-image: url("sar_sarpette_right.png");
+}
+
 #main-div .inner-div .bat-preview {
   width: 200px;
   height: 60px;
