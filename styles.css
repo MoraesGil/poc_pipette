@@ -117,22 +117,37 @@ section {
 
 #main-div .inner-div .bat-preview {
   width: min(45%, 320px);
-  aspect-ratio: 200 / 60;
-  border: 2px solid yellow;
+  aspect-ratio: 200 / 60; 
   border-radius: 10px;
   position: absolute;
-  top: 30%;
-  left: 13%;
-  overflow: hidden;
-  background: rgba(255, 255, 0, 0.05);
+  overflow: hidden; 
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+/* Lado esquerdo - visão lado */
+#main-div .inner-div .bat-preview.orientation-left {
+  top: 28.5%;
+  left: 13.5%;
+}
+
+/* Lado direito - visão lado */
 #main-div .inner-div .bat-preview.orientation-right {
   top: 29%;
   left: 45%;
+}
+
+/* Lado esquerdo - visão topo */
+#main-div .inner-div .bat-preview.view-top.orientation-left {
+  top: 25.5%;
+  left: 12.5%;
+}
+
+/* Lado direito - visão topo */
+#main-div .inner-div .bat-preview.view-top.orientation-right {
+  top: 25.5%;
+  left: 12.5%;
 }
 
 #main-div .inner-div .bat-preview canvas {
