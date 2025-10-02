@@ -19,11 +19,35 @@
             <option value="middle">Meio</option>
             <option value="bottom">Base</option>
           </select>
+
+          <fieldset class="radio-group" aria-label="Lado">
+            <legend>Lado:</legend>
+            <label>
+              <input type="radio" name="orientation" value="left" checked />
+              Esquerda
+            </label>
+            <label>
+              <input type="radio" name="orientation" value="right" />
+              Direita
+            </label>
+          </fieldset>
+
+          <fieldset class="radio-group" aria-label="Visão">
+            <legend>Visão:</legend>
+            <label>
+              <input type="radio" name="view" value="side" checked />
+              Lado
+            </label>
+            <label>
+              <input type="radio" name="view" value="top" />
+              Topo
+            </label>
+          </fieldset>
         </div>
         <div id="main-div">
-          <div class="inner-div position-top">
-            <div class="bat-preview">
-              <div class="bat-mask position-top"></div>
+          <div class="inner-div position-top orientation-left view-side">
+            <div class="bat-preview orientation-left view-side">
+              <div class="bat-mask position-top orientation-left view-side"></div>
             </div>
           </div>
         </div>
@@ -36,16 +60,77 @@
       const select = document.getElementById('position-select');
       const mask = document.querySelector('.bat-mask');
       const inner = document.querySelector('.inner-div');
+      const preview = document.querySelector('.bat-preview');
+      const orientationRadios = document.querySelectorAll('input[name="orientation"]');
+      const viewRadios = document.querySelectorAll('input[name="view"]');
 
-      const positionClasses = ['position-top', 'position-middle', 'position-bottom'];
+      const positionValues = ['top', 'middle', 'bottom'];
+      const orientationValues = ['left', 'right'];
+      const viewValues = ['side', 'top'];
 
-      select.addEventListener('change', event => {
-        const selected = `position-${event.target.value}`;
-        mask.classList.remove(...positionClasses);
-        mask.classList.add(selected);
-        inner.classList.remove(...positionClasses);
-        inner.classList.add(selected);
+      const applyModifier = (elements, prefix, value, values) => {
+        if (!elements.length) return;
+        const classNames = values.map(option => `${prefix}-${option}`);
+        elements.forEach(element => {
+          element.classList.remove(...classNames);
+          element.classList.add(`${prefix}-${value}`);
+        });
+      };
+
+      const applyPosition = value => {
+        applyModifier([inner, mask], 'position', value, positionValues);
+      };
+
+      const applyOrientation = value => {
+        applyModifier([inner, mask, preview], 'orientation', value, orientationValues);
+      };
+
+      const applyView = value => {
+        applyModifier([inner, mask, preview], 'view', value, viewValues);
+      };
+
+      const getRadioValue = name => {
+        const checked = document.querySelector(`input[name="${name}"]:checked`);
+        return checked ? checked.value : null;
+      };
+
+      const updateState = () => {
+        const orientation = getRadioValue('orientation');
+        const view = getRadioValue('view');
+        let position = select.value;
+
+        if (view === 'side') {
+          position = orientation === 'left' ? 'top' : 'bottom';
+        } else if (view === 'top') {
+          position = 'middle';
+        }
+
+        if (select.value !== position) {
+          select.value = position;
+        }
+
+        applyPosition(position);
+        applyOrientation(orientation);
+        applyView(view);
+      };
+
+      select.addEventListener('change', () => {
+        updateState();
       });
+
+      orientationRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+          updateState();
+        });
+      });
+
+      viewRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+          updateState();
+        });
+      });
+
+      updateState();
     </script>
   </body>
 </html>
