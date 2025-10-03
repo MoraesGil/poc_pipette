@@ -4,6 +4,9 @@ const previewCanvas = document.getElementById('bat-preview-canvas');
 const orientationRadios = document.querySelectorAll('input[name="orientation"]');
 const viewRadios = document.querySelectorAll('input[name="view"]');
 const contentRadios = document.querySelectorAll('input[name="content"]');
+const zoomOutBtn = document.getElementById('zoom-out');
+const zoomInBtn = document.getElementById('zoom-in');
+const zoomValueLabel = document.getElementById('zoom-value');
 
 const orientationValues = ['left', 'right'];
 const viewValues = ['side', 'top'];
@@ -22,6 +25,7 @@ const previewState = {
   orientation: 'left',
   view: 'side',
   content: 'image',
+  scale: 1,
 };
 
 const applyOrientation = value => {
@@ -127,9 +131,12 @@ const drawPreview = () => {
       drawHeight = maskHeight;
       drawWidth = drawHeight * imgRatio;
     } else {
-      drawWidth = maskWidth;
-      drawHeight = drawWidth / imgRatio;
+    drawWidth = maskWidth;
+    drawHeight = drawWidth / imgRatio;
     }
+
+  drawWidth *= previewState.scale;
+  drawHeight *= previewState.scale;
 
     const drawX = maskX + (maskWidth - drawWidth) / 2;
     const drawY = maskY + (maskHeight - drawHeight) / 2;
@@ -192,5 +199,22 @@ contentRadios.forEach(radio => {
     updateState();
   });
 });
+
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+const updateZoomDisplay = () => {
+  zoomValueLabel.textContent = `${Math.round(previewState.scale * 100)}%`;
+};
+
+const changeZoom = delta => {
+  previewState.scale = clamp(previewState.scale + delta, 0.5, 3);
+  updateZoomDisplay();
+  drawPreview();
+};
+
+zoomOutBtn.addEventListener('click', () => changeZoom(-0.1));
+zoomInBtn.addEventListener('click', () => changeZoom(0.1));
+
+updateZoomDisplay();
 
 updateState();

@@ -27,7 +27,7 @@ body {
   padding: 0.35rem 0.75rem;
   border-radius: 6px;
   border: 1px solid #444;
-  background: #fff;
+  /* background: #fff; */
   color: #222;
 }
 
@@ -52,6 +52,58 @@ body {
   align-items: center;
   gap: 0.35rem;
   font-weight: 500;
+}
+
+.controls .button-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.controls .button-group legend {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.zoom-controls button {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #666;
+  /* background: #fff; */
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.1s ease;
+  background: rgba(0, 0, 0, 0.08);
+  outline: none;
+}
+
+ 
+
+.zoom-controls button:active {
+  transform: scale(0.92);
+}
+
+.zoom-controls #zoom-value {
+  min-width: 56px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 main {
