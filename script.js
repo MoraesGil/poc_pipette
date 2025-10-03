@@ -4,8 +4,7 @@ const previewCanvas = document.getElementById('bat-preview-canvas');
 const orientationRadios = document.querySelectorAll('input[name="orientation"]');
 const viewRadios = document.querySelectorAll('input[name="view"]');
 const contentRadios = document.querySelectorAll('input[name="content"]');
-const zoomOutBtn = document.getElementById('zoom-out');
-const zoomInBtn = document.getElementById('zoom-in');
+const zoomRange = document.getElementById('zoom-range');
 const zoomValueLabel = document.getElementById('zoom-value');
 const moveButtons = document.querySelectorAll('.move-controls button');
 
@@ -52,7 +51,6 @@ const getRadioValue = name => {
 };
 
 const BASE_PREVIEW_WIDTH = 200;
-const BASE_PREVIEW_HEIGHT = 60;
 const MASK_BASE_HEIGHT = 200;
 const MASK_ASPECT_RATIO = 1374.667 / 1166.667;
 const MASK_BASE_WIDTH = MASK_BASE_HEIGHT * MASK_ASPECT_RATIO;
@@ -203,20 +201,18 @@ contentRadios.forEach(radio => {
   });
 });
 
-const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
-
 const updateZoomDisplay = () => {
   zoomValueLabel.textContent = `${Math.round(previewState.scale * 100)}%`;
 };
 
-const changeZoom = delta => {
-  previewState.scale = clamp(previewState.scale + delta, 0.5, 3);
+zoomRange.addEventListener('input', event => {
+  const value = Number(event.target.value) || 0;
+  previewState.scale = value / 100;
   updateZoomDisplay();
   drawPreview();
-};
+});
 
-zoomOutBtn.addEventListener('click', () => changeZoom(-0.1));
-zoomInBtn.addEventListener('click', () => changeZoom(0.1));
+updateZoomDisplay();
 
 const MOVE_STEP = 6;
 
@@ -250,7 +246,5 @@ moveButtons.forEach(button => {
     }
   });
 });
-
-updateZoomDisplay();
 
 updateState();

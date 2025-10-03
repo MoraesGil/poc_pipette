@@ -83,6 +83,17 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-width: 180px;
+}
+
+.zoom-controls input[type="range"] {
+  flex: 1;
+}
+
+.zoom-controls span {
+  min-width: 56px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .zoom-controls button {
@@ -109,12 +120,6 @@ body {
 
 .zoom-controls button:active {
   transform: scale(0.92);
-}
-
-.zoom-controls #zoom-value {
-  min-width: 56px;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
 }
 
 .move-controls {
