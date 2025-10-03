@@ -23,6 +23,15 @@ body {
   flex-wrap: wrap;
 }
 
+.controls-secondary {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+
 .controls select {
   padding: 0.35rem 0.75rem;
   border-radius: 6px;
@@ -81,7 +90,7 @@ body {
   height: 20px;
   border-radius: 50%;
   border: 1px solid #666;
-  /* background: #fff; */
+  background: transparent;
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 700;
@@ -90,11 +99,13 @@ body {
   align-items: center;
   justify-content: center;
   transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.zoom-controls button:hover,
+.zoom-controls button:focus-visible {
   background: rgba(0, 0, 0, 0.08);
   outline: none;
 }
-
- 
 
 .zoom-controls button:active {
   transform: scale(0.92);
@@ -104,6 +115,44 @@ body {
   min-width: 56px;
   text-align: center;
   font-variant-numeric: tabular-nums;
+}
+
+.move-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.move-controls .move-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.move-controls button {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #666;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.move-controls button:hover,
+.move-controls button:focus-visible {
+  background: rgba(0, 0, 0, 0.08);
+  outline: none;
+}
+
+.move-controls button:active {
+  transform: scale(0.92);
 }
 
 main {

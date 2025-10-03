@@ -7,6 +7,7 @@ const contentRadios = document.querySelectorAll('input[name="content"]');
 const zoomOutBtn = document.getElementById('zoom-out');
 const zoomInBtn = document.getElementById('zoom-in');
 const zoomValueLabel = document.getElementById('zoom-value');
+const moveButtons = document.querySelectorAll('.move-controls button');
 
 const orientationValues = ['left', 'right'];
 const viewValues = ['side', 'top'];
@@ -26,6 +27,8 @@ const previewState = {
   view: 'side',
   content: 'image',
   scale: 1,
+  offsetX: 0,
+  offsetY: 0,
 };
 
 const applyOrientation = value => {
@@ -138,8 +141,8 @@ const drawPreview = () => {
   drawWidth *= previewState.scale;
   drawHeight *= previewState.scale;
 
-    const drawX = maskX + (maskWidth - drawWidth) / 2;
-    const drawY = maskY + (maskHeight - drawHeight) / 2;
+  const drawX = maskX + (maskWidth - drawWidth) / 2 + previewState.offsetX * scale;
+  const drawY = maskY + (maskHeight - drawHeight) / 2 + previewState.offsetY * scale;
 
     ctx.drawImage(contentImage, drawX, drawY, drawWidth, drawHeight);
     ctx.restore();
@@ -214,6 +217,39 @@ const changeZoom = delta => {
 
 zoomOutBtn.addEventListener('click', () => changeZoom(-0.1));
 zoomInBtn.addEventListener('click', () => changeZoom(0.1));
+
+const MOVE_STEP = 6;
+
+const moveImage = direction => {
+  switch (direction) {
+    case 'up':
+      previewState.offsetY -= MOVE_STEP;
+      break;
+    case 'down':
+      previewState.offsetY += MOVE_STEP;
+      break;
+    case 'left':
+      previewState.offsetX -= MOVE_STEP;
+      break;
+    case 'right':
+      previewState.offsetX += MOVE_STEP;
+      break;
+    case 'center':
+      previewState.offsetX = 0;
+      previewState.offsetY = 0;
+      break;
+  }
+  drawPreview();
+};
+
+moveButtons.forEach(button => {
+  button.addEventListener('click', event => {
+    const direction = event.currentTarget.getAttribute('data-move');
+    if (direction) {
+      moveImage(direction);
+    }
+  });
+});
 
 updateZoomDisplay();
 

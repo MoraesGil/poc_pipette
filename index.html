@@ -48,13 +48,26 @@
               Cor
             </label>
           </fieldset>
+        </div>
 
+        <div class="controls-secondary">
           <fieldset class="button-group" aria-label="Zoom da imagem">
             <legend>Zoom:</legend>
             <div class="zoom-controls">
-              <button type="button" id="zoom-out" aria-label="Diminuir zoom">−</button>
+              <button type="button" id="zoom-out" aria-label="Diminuir zoom" title="Diminuir zoom">−</button>
               <span id="zoom-value" aria-live="polite">100%</span>
-              <button type="button" id="zoom-in" aria-label="Aumentar zoom">+</button>
+              <button type="button" id="zoom-in" aria-label="Aumentar zoom" title="Aumentar zoom">+</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="button-group" aria-label="Posição da imagem">
+            <legend>Posição:</legend>
+            <div class="move-controls">
+              <button type="button" data-move="left" aria-label="Mover para a esquerda" title="Mover para a esquerda">←</button>
+              <button type="button" data-move="up" aria-label="Mover para cima" title="Mover para cima">↑</button>
+              <button type="button" data-move="center" aria-label="Centralizar imagem" title="Centralizar imagem">•</button>
+              <button type="button" data-move="down" aria-label="Mover para baixo" title="Mover para baixo">↓</button>
+              <button type="button" data-move="right" aria-label="Mover para a direita" title="Mover para a direita">→</button>
             </div>
           </fieldset>
         </div>
