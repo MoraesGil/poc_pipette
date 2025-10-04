@@ -11,6 +11,8 @@ const overlayZoomRange = document.getElementById('overlay-zoom-range');
 const overlayZoomValueLabel = document.getElementById('overlay-zoom-value');
 const moveButtons = document.querySelectorAll('.move-controls button');
 const overlayMoveButtons = document.querySelectorAll('[data-overlay-move]');
+const imageUploadInput = document.getElementById('image-upload');
+const uploadStatus = document.getElementById('upload-status');
 
 const orientationValues = ['left', 'right'];
 const viewValues = ['side', 'top'];
@@ -51,7 +53,7 @@ const applyView = value => {
 const applyContent = value => {
   previewState.content = value;
   const contentTargets = [preview?.querySelector('.wrapper-crop')].filter(Boolean);
-  applyModifier(contentTargets, 'content', value, ['image', 'color']);
+  applyModifier(contentTargets, 'content', value, ['image', 'upload', 'color']);
 };
 
 const applyOverlayTransform = () => {
@@ -82,6 +84,9 @@ const contentImage = new Image();
 contentImage.src = 'image_uploaded.jpg';
 const maskImage = new Image();
 maskImage.src = 'morcego_canva_antigo.svg';
+
+let uploadedImage = null;
+let hasUploadedImage = false;
 
 let loadedImages = 0;
 const ensureDraw = () => {
@@ -130,15 +135,16 @@ const drawPreview = () => {
   const maskX = MASK_BASE_LEFT * scale;
   const maskY = (MASK_BASE_TOP[previewState.position] || 0) * scale;
 
-  if (previewState.content === 'image') {
+  if (previewState.content === 'image' || previewState.content === 'upload') {
     ctx.save();
     if (previewState.orientation === 'right' && previewState.view === 'top') {
       ctx.translate(rect.width / 2, rect.height / 2);
       ctx.rotate(Math.PI);
       ctx.translate(-rect.width / 2, -rect.height / 2);
     }
-    const imgWidth = contentImage.naturalWidth || contentImage.width;
-    const imgHeight = contentImage.naturalHeight || contentImage.height;
+    const activeImage = previewState.content === 'upload' && uploadedImage ? uploadedImage : contentImage;
+    const imgWidth = activeImage.naturalWidth || activeImage.width;
+    const imgHeight = activeImage.naturalHeight || activeImage.height;
     const imgRatio = imgWidth / imgHeight;
     const maskRatio = maskWidth / maskHeight;
 
@@ -159,7 +165,7 @@ const drawPreview = () => {
   const drawX = maskX + (maskWidth - drawWidth) / 2 + previewState.offsetX * scale;
   const drawY = maskY + (maskHeight - drawHeight) / 2 + previewState.offsetY * scale;
 
-    ctx.drawImage(contentImage, drawX, drawY, drawWidth, drawHeight);
+    ctx.drawImage(activeImage, drawX, drawY, drawWidth, drawHeight);
     ctx.restore();
     ctx.globalCompositeOperation = 'destination-in';
     ctx.drawImage(maskImage, maskX, maskY, maskWidth, maskHeight);
@@ -282,5 +288,88 @@ overlayMoveButtons.forEach(button => {
     }
   });
 });
+
+// Função para validar tipos de arquivo
+const validateFileType = (file) => {
+  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+  return allowedTypes.includes(file.type);
+};
+
+// Função para habilitar a opção upload
+const enableUploadOption = () => {
+  const uploadRadio = document.querySelector('input[name="content"][value="upload"]');
+  if (uploadRadio) {
+    uploadRadio.disabled = false;
+    hasUploadedImage = true;
+  }
+};
+
+// Função para atualizar o status do upload
+const updateUploadStatus = (message, isError = false) => {
+  if (uploadStatus) {
+    uploadStatus.textContent = message;
+    uploadStatus.style.color = isError ? '#d32f2f' : '#2e7d32';
+  }
+};
+
+// Event listener para o upload de imagens
+if (imageUploadInput) {
+  imageUploadInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    
+    if (!file) {
+      return;
+    }
+    
+    // Validar tipo de arquivo
+    if (!validateFileType(file)) {
+      updateUploadStatus('Formato não suportado. Use apenas JPG, JPEG ou PNG.', true);
+      event.target.value = ''; // Limpar o input
+      return;
+    }
+    
+    // Validar tamanho (máximo 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      updateUploadStatus('Arquivo muito grande. Máximo: 5MB.', true);
+      event.target.value = ''; // Limpar o input
+      return;
+    }
+    
+    // Ler o arquivo
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      // Criar nova imagem
+      const newImage = new Image();
+      newImage.onload = () => {
+        uploadedImage = newImage;
+        enableUploadOption();
+        updateUploadStatus(`Imagem carregada: ${file.name}`);
+        
+        // Se é o primeiro upload, automaticamente selecionar a opção upload
+        const uploadRadio = document.querySelector('input[name="content"][value="upload"]');
+        const isFirstUpload = !hasUploadedImage;
+        
+        if (uploadRadio && isFirstUpload) {
+          uploadRadio.checked = true;
+          updateState();
+        } else if (previewState.content === 'upload') {
+          // Se já havia upload e está selecionado, redesenhar
+          drawPreview();
+        }
+      };
+      newImage.onerror = () => {
+        updateUploadStatus('Erro ao carregar a imagem.', true);
+        event.target.value = ''; // Limpar o input
+      };
+      newImage.src = e.target.result;
+    };
+    reader.onerror = () => {
+      updateUploadStatus('Erro ao ler o arquivo.', true);
+      event.target.value = ''; // Limpar o input
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 updateState();

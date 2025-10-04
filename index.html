@@ -44,6 +44,10 @@
               Imagem
             </label>
             <label>
+              <input type="radio" name="content" value="upload" disabled />
+              Upload
+            </label>
+            <label>
               <input type="radio" name="content" value="color" />
               Cor
             </label>
@@ -88,6 +92,15 @@
               <button type="button" data-overlay-move="center" aria-label="Centralizar área" title="Centralizar área">•</button>
               <button type="button" data-overlay-move="down" aria-label="Mover área para baixo" title="Mover área para baixo">↓</button>
               <button type="button" data-overlay-move="right" aria-label="Mover área para a direita" title="Mover área para a direita">→</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="file-group" aria-label="Upload de Imagem">
+            <legend>Upload:</legend>
+            <div class="upload-controls">
+              <input type="file" id="image-upload" accept=".jpg,.jpeg,.png" aria-label="Escolher imagem" />
+              <label for="image-upload" class="upload-button">Escolher Imagem</label>
+              <span id="upload-status" class="upload-status">Nenhuma imagem selecionada</span>
             </div>
           </fieldset>
         </div>
