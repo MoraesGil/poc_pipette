@@ -13,7 +13,7 @@ const overlayZoomRange = document.getElementById('overlay-zoom-range');
 const overlayZoomValueLabel = document.getElementById('overlay-zoom-value');
 const overlayZoomIncreaseBtn = document.getElementById('overlay-zoom-increase');
 const overlayZoomDecreaseBtn = document.getElementById('overlay-zoom-decrease');
-const moveButtons = document.querySelectorAll('.move-controls button');
+const moveButtons = document.querySelectorAll('[data-move]');
 const overlayMoveButtons = document.querySelectorAll('[data-overlay-move]');
 const maskedMoveButtons = document.querySelectorAll('[data-masked-move]');
 const imageUploadInput = document.getElementById('image-upload');
@@ -22,6 +22,76 @@ const areaHeightRange = document.getElementById('area-height-range');
 const areaHeightValueLabel = document.getElementById('area-height-value');
 const areaHeightIncreaseBtn = document.getElementById('area-height-increase');
 const areaHeightDecreaseBtn = document.getElementById('area-height-decrease');
+const zoomControlHint = document.querySelector('[aria-label="Zoom da imagem"] .control-hint');
+const contentMoveHint = document.querySelector('[aria-label="Posição da imagem"] .control-hint');
+const areaZoomHint = document.querySelector('[aria-label="Zoom da área"] .control-hint');
+const areaMoveHint = document.querySelector('[aria-label="Posição da área"] .control-hint');
+const maskedMoveHint = document.querySelector('[aria-label="Movimento da imagem mascarada"] .control-hint');
+const areaHeightHint = document.querySelector('[aria-label="Altura da área"] .control-hint');
+
+const HOLD_INITIAL_DELAY = 250;
+const HOLD_REPEAT_INTERVAL = 70;
+
+const setupHoldRepeater = (buttons, attribute, handler) => {
+  buttons.forEach(button => {
+    const direction = button.getAttribute(attribute);
+    if (!direction) return;
+
+    let holdTimeoutId = null;
+    let holdIntervalId = null;
+    let activePointerId = null;
+
+    const clearTimers = () => {
+      if (holdTimeoutId !== null) {
+        clearTimeout(holdTimeoutId);
+        holdTimeoutId = null;
+      }
+      if (holdIntervalId !== null) {
+        clearInterval(holdIntervalId);
+        holdIntervalId = null;
+      }
+    };
+
+    const stopHold = () => {
+      clearTimers();
+      if (activePointerId !== null && button.hasPointerCapture?.(activePointerId)) {
+        button.releasePointerCapture?.(activePointerId);
+      }
+      if (button.dataset.holdActive === 'true') {
+        requestAnimationFrame(() => {
+          button.dataset.holdActive = 'false';
+        });
+      }
+      activePointerId = null;
+    };
+
+    button.addEventListener('pointerdown', event => {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      event.preventDefault();
+      clearTimers();
+      activePointerId = event.pointerId;
+      button.dataset.holdActive = 'true';
+      button.setPointerCapture?.(activePointerId);
+      handler(direction);
+      holdTimeoutId = window.setTimeout(() => {
+        holdIntervalId = window.setInterval(() => handler(direction), HOLD_REPEAT_INTERVAL);
+      }, HOLD_INITIAL_DELAY);
+    });
+
+    ['pointerup', 'pointerleave', 'pointercancel', 'pointerout', 'lostpointercapture', 'blur'].forEach(evt => {
+      button.addEventListener(evt, () => stopHold());
+    });
+
+    button.addEventListener('click', event => {
+      if (button.dataset.holdActive === 'true') {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        return;
+      }
+      handler(direction);
+    });
+  });
+};
 
 const orientationValues = ['left', 'right'];
 const viewValues = ['side', 'top'];
@@ -251,11 +321,18 @@ const updateZoomRange = () => {
 const updateZoomDisplay = () => {
   zoomValueLabel.textContent = `${Math.round(previewState.scale * 100)}%`;
   updateZoomRange();
+  if (zoomControlHint) {
+    zoomControlHint.querySelector('[data-hint="zoom-scale"]').textContent = previewState.scale.toFixed(2);
+  }
 };
 
 const updateOverlayZoomDisplay = () => {
   if (!overlayZoomValueLabel) return;
   overlayZoomValueLabel.textContent = `${Math.round(previewState.overlayScale * 100)}%`;
+  if (areaZoomHint) {
+    const overlayScaleEl = areaZoomHint.querySelector('[data-hint="overlay-scale"]');
+    if (overlayScaleEl) overlayScaleEl.textContent = previewState.overlayScale.toFixed(2);
+  }
 };
 
 zoomRange.addEventListener('input', event => {
@@ -304,6 +381,10 @@ const changeOverlayZoom = delta => {
   updateOverlayZoomRange();
   applyOverlayTransform();
   drawPreview();
+  if (areaZoomHint) {
+    const overlayScaleEl = areaZoomHint.querySelector('[data-hint="overlay-scale"]');
+    if (overlayScaleEl) overlayScaleEl.textContent = previewState.overlayScale.toFixed(2);
+  }
 };
 
 const AREA_HEIGHT_STEP = 1;
@@ -317,6 +398,10 @@ const updateAreaHeightInputs = () => {
   if (areaHeightValueLabel) {
     areaHeightValueLabel.textContent = `${Math.round(previewState.overlayHeightPercent)}%`;
   }
+  if (areaHeightHint) {
+    const overlayHeightEl = areaHeightHint.querySelector('[data-hint="overlay-height-percent"]');
+    if (overlayHeightEl) overlayHeightEl.textContent = `${previewState.overlayHeightPercent}%`;
+  }
 };
 
 const changeAreaHeight = delta => {
@@ -326,25 +411,33 @@ const changeAreaHeight = delta => {
   updateAreaHeightInputs();
   applyOverlayTransform();
   drawPreview();
+  if (areaHeightHint) {
+    const overlayHeightEl = areaHeightHint.querySelector('[data-hint="overlay-height-percent"]');
+    if (overlayHeightEl) overlayHeightEl.textContent = `${previewState.overlayHeightPercent}%`;
+  }
 };
 
 const ZOOM_STEP_FINE = 0.02;
 const OVERLAY_ZOOM_STEP_FINE = 0.02;
 
 if (zoomIncreaseBtn) {
-  zoomIncreaseBtn.addEventListener('click', () => changeZoom(ZOOM_STEP_FINE));
+  zoomIncreaseBtn.dataset.zoomDirection = 'increase';
+  setupHoldRepeater([zoomIncreaseBtn], 'data-zoom-direction', () => changeZoom(ZOOM_STEP_FINE));
 }
 
 if (zoomDecreaseBtn) {
-  zoomDecreaseBtn.addEventListener('click', () => changeZoom(-ZOOM_STEP_FINE));
+  zoomDecreaseBtn.dataset.zoomDirection = 'decrease';
+  setupHoldRepeater([zoomDecreaseBtn], 'data-zoom-direction', () => changeZoom(-ZOOM_STEP_FINE));
 }
 
 if (overlayZoomIncreaseBtn) {
-  overlayZoomIncreaseBtn.addEventListener('click', () => changeOverlayZoom(OVERLAY_ZOOM_STEP_FINE));
+  overlayZoomIncreaseBtn.dataset.overlayZoomDirection = 'increase';
+  setupHoldRepeater([overlayZoomIncreaseBtn], 'data-overlay-zoom-direction', () => changeOverlayZoom(OVERLAY_ZOOM_STEP_FINE));
 }
 
 if (overlayZoomDecreaseBtn) {
-  overlayZoomDecreaseBtn.addEventListener('click', () => changeOverlayZoom(-OVERLAY_ZOOM_STEP_FINE));
+  overlayZoomDecreaseBtn.dataset.overlayZoomDirection = 'decrease';
+  setupHoldRepeater([overlayZoomDecreaseBtn], 'data-overlay-zoom-direction', () => changeOverlayZoom(-OVERLAY_ZOOM_STEP_FINE));
 }
 
 const MASKED_MOVE_STEP = 4;
@@ -370,16 +463,15 @@ const moveMaskedContent = direction => {
   }
   applyOverlayTransform();
   drawPreview();
+  if (maskedMoveHint) {
+    const maskedOffsetXEl = maskedMoveHint.querySelector('[data-hint="masked-offset-x"]');
+    const maskedOffsetYEl = maskedMoveHint.querySelector('[data-hint="masked-offset-y"]');
+    if (maskedOffsetXEl) maskedOffsetXEl.textContent = previewState.maskedOffsetX;
+    if (maskedOffsetYEl) maskedOffsetYEl.textContent = previewState.maskedOffsetY;
+  }
 };
 
-maskedMoveButtons.forEach(button => {
-  button.addEventListener('click', event => {
-    const direction = event.currentTarget.getAttribute('data-masked-move');
-    if (direction) {
-      moveMaskedContent(direction);
-    }
-  });
-});
+setupHoldRepeater(maskedMoveButtons, 'data-masked-move', dir => moveMaskedContent(dir));
 
 if (areaHeightRange) {
   areaHeightRange.addEventListener('input', event => {
@@ -393,11 +485,13 @@ if (areaHeightRange) {
 }
 
 if (areaHeightIncreaseBtn) {
-  areaHeightIncreaseBtn.addEventListener('click', () => changeAreaHeight(AREA_HEIGHT_STEP));
+  areaHeightIncreaseBtn.dataset.areaHeightDirection = 'increase';
+  setupHoldRepeater([areaHeightIncreaseBtn], 'data-area-height-direction', () => changeAreaHeight(AREA_HEIGHT_STEP));
 }
 
 if (areaHeightDecreaseBtn) {
-  areaHeightDecreaseBtn.addEventListener('click', () => changeAreaHeight(-AREA_HEIGHT_STEP));
+  areaHeightDecreaseBtn.dataset.areaHeightDirection = 'decrease';
+  setupHoldRepeater([areaHeightDecreaseBtn], 'data-area-height-direction', () => changeAreaHeight(-AREA_HEIGHT_STEP));
 }
 
 const MOVE_STEP = 6;
@@ -422,17 +516,16 @@ const moveImage = direction => {
       previewState.offsetY = 0;
       break;
   }
+  if (contentMoveHint) {
+    const offsetXEl = contentMoveHint.querySelector('[data-hint="content-offset-x"]');
+    const offsetYEl = contentMoveHint.querySelector('[data-hint="content-offset-y"]');
+    if (offsetXEl) offsetXEl.textContent = previewState.offsetX;
+    if (offsetYEl) offsetYEl.textContent = previewState.offsetY;
+  }
   drawPreview();
 };
 
-moveButtons.forEach(button => {
-  button.addEventListener('click', event => {
-    const direction = event.currentTarget.getAttribute('data-move');
-    if (direction) {
-      moveImage(direction);
-    }
-  });
-});
+setupHoldRepeater(moveButtons, 'data-move', dir => moveImage(dir));
 
 const moveOverlay = direction => {
   switch (direction) {
@@ -455,16 +548,15 @@ const moveOverlay = direction => {
   }
   applyOverlayTransform();
   drawPreview();
+  if (areaMoveHint) {
+    const overlayOffsetXEl = areaMoveHint.querySelector('[data-hint="overlay-offset-x"]');
+    const overlayOffsetYEl = areaMoveHint.querySelector('[data-hint="overlay-offset-y"]');
+    if (overlayOffsetXEl) overlayOffsetXEl.textContent = previewState.overlayOffsetX;
+    if (overlayOffsetYEl) overlayOffsetYEl.textContent = previewState.overlayOffsetY;
+  }
 };
 
-overlayMoveButtons.forEach(button => {
-  button.addEventListener('click', event => {
-    const direction = event.currentTarget.getAttribute('data-overlay-move');
-    if (direction) {
-      moveOverlay(direction);
-    }
-  });
-});
+setupHoldRepeater(overlayMoveButtons, 'data-overlay-move', dir => moveOverlay(dir));
 
 // Função para validar tipos de arquivo
 const validateFileType = (file) => {

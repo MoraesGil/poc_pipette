@@ -191,6 +191,33 @@ body {
   transform: scale(0.92);
 }
 
+.control-hint {
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #666;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.control-hint kbd {
+  font-size: 0.75rem;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+.control-hint span[data-hint] {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 .masked-move-controls {
   gap: 0.5rem;
 }

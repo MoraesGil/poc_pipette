@@ -58,10 +58,16 @@
           <fieldset class="button-group" aria-label="Zoom da imagem">
             <legend>Zoom conteúdo</legend>
             <div class="zoom-controls">
-              <button type="button" id="zoom-decrease" class="zoom-button" aria-label="Diminuir zoom" title="Diminuir zoom">−</button>
+              <button type="button" id="zoom-decrease" data-zoom-direction="decrease" class="zoom-button" aria-label="Diminuir zoom" title="Diminuir zoom">−</button>
               <input type="range" id="zoom-range" min="0" max="200" value="100" step="1" aria-label="Ajustar zoom" />
               <span id="zoom-value" aria-live="polite">100%</span>
-              <button type="button" id="zoom-increase" class="zoom-button" aria-label="Aumentar zoom" title="Aumentar zoom">+</button>
+              <button type="button" id="zoom-increase" data-zoom-direction="increase" class="zoom-button" aria-label="Aumentar zoom" title="Aumentar zoom">+</button>
+            </div>
+            <div class="control-hint">
+              state:
+              <kbd>previewState.scale</kbd>
+              =
+              <span data-hint="zoom-scale">1.00</span>
             </div>
           </fieldset>
 
@@ -74,6 +80,15 @@
               <button type="button" data-move="down" aria-label="Mover para baixo" title="Mover para baixo">↓</button>
               <button type="button" data-move="right" aria-label="Mover para a direita" title="Mover para a direita">→</button>
             </div>
+            <div class="control-hint">
+              state:
+              <kbd>previewState.offsetX</kbd>
+              =
+              <span data-hint="content-offset-x">0</span>,
+              <kbd>previewState.offsetY</kbd>
+              =
+              <span data-hint="content-offset-y">0</span>
+            </div>
           </fieldset>
         </div>
 
@@ -81,10 +96,16 @@
           <fieldset class="button-group" aria-label="Zoom da área">
             <legend>Zoom da área:</legend>
             <div class="zoom-controls">
-              <button type="button" id="overlay-zoom-decrease" class="zoom-button" aria-label="Diminuir zoom da área" title="Diminuir zoom da área">−</button>
+              <button type="button" id="overlay-zoom-decrease" data-overlay-zoom-direction="decrease" class="zoom-button" aria-label="Diminuir zoom da área" title="Diminuir zoom da área">−</button>
               <input type="range" id="overlay-zoom-range" min="50" max="200" value="100" step="1" aria-label="Ajustar zoom da área" />
               <span id="overlay-zoom-value" aria-live="polite">100%</span>
-              <button type="button" id="overlay-zoom-increase" class="zoom-button" aria-label="Aumentar zoom da área" title="Aumentar zoom da área">+</button>
+              <button type="button" id="overlay-zoom-increase" data-overlay-zoom-direction="increase" class="zoom-button" aria-label="Aumentar zoom da área" title="Aumentar zoom da área">+</button>
+            </div>
+            <div class="control-hint">
+              state:
+              <kbd>previewState.overlayScale</kbd>
+              =
+              <span data-hint="overlay-scale">1.00</span>
             </div>
           </fieldset>
 
@@ -96,6 +117,15 @@
               <button type="button" data-overlay-move="center" aria-label="Centralizar área" title="Centralizar área">•</button>
               <button type="button" data-overlay-move="down" aria-label="Mover área para baixo" title="Mover área para baixo">↓</button>
               <button type="button" data-overlay-move="right" aria-label="Mover área para a direita" title="Mover área para a direita">→</button>
+            </div>
+            <div class="control-hint">
+              state:
+              <kbd>previewState.overlayOffsetX</kbd>
+              =
+              <span data-hint="overlay-offset-x">0</span>,
+              <kbd>previewState.overlayOffsetY</kbd>
+              =
+              <span data-hint="overlay-offset-y">0</span>
             </div>
           </fieldset>
 
@@ -119,15 +149,30 @@
               <button type="button" data-masked-move="down" aria-label="Mover conteúdo mascarado para baixo" title="Mover conteúdo mascarado para baixo">↓</button>
               <button type="button" data-masked-move="right" aria-label="Mover conteúdo mascarado para a direita" title="Mover conteúdo mascarado para a direita">→</button>
             </div>
+            <div class="control-hint">
+              state:
+              <kbd>previewState.maskedOffsetX</kbd>
+              =
+              <span data-hint="masked-offset-x">0</span>,
+              <kbd>previewState.maskedOffsetY</kbd>
+              =
+              <span data-hint="masked-offset-y">0</span>
+            </div>
           </fieldset>
 
           <fieldset class="button-group" aria-label="Altura da área">
             <legend>Altura da área:</legend>
             <div class="zoom-controls height-controls">
-              <button type="button" id="area-height-decrease" class="zoom-button" aria-label="Diminuir altura da área" title="Diminuir altura da área">−</button>
+              <button type="button" id="area-height-decrease" data-area-height-direction="decrease" class="zoom-button" aria-label="Diminuir altura da área" title="Diminuir altura da área">−</button>
               <input type="range" id="area-height-range" min="10" max="60" value="24" step="1" aria-label="Ajustar altura da área" />
               <span id="area-height-value" aria-live="polite">24%</span>
-              <button type="button" id="area-height-increase" class="zoom-button" aria-label="Aumentar altura da área" title="Aumentar altura da área">+</button>
+              <button type="button" id="area-height-increase" data-area-height-direction="increase" class="zoom-button" aria-label="Aumentar altura da área" title="Aumentar altura da área">+</button>
+            </div>
+            <div class="control-hint">
+              state:
+              <kbd>previewState.overlayHeightPercent</kbd>
+              =
+              <span data-hint="overlay-height-percent">24%</span>
             </div>
           </fieldset>
         </div>
