@@ -7,8 +7,12 @@ const viewRadios = document.querySelectorAll('input[name="view"]');
 const contentRadios = document.querySelectorAll('input[name="content"]');
 const zoomRange = document.getElementById('zoom-range');
 const zoomValueLabel = document.getElementById('zoom-value');
+const zoomIncreaseBtn = document.getElementById('zoom-increase');
+const zoomDecreaseBtn = document.getElementById('zoom-decrease');
 const overlayZoomRange = document.getElementById('overlay-zoom-range');
 const overlayZoomValueLabel = document.getElementById('overlay-zoom-value');
+const overlayZoomIncreaseBtn = document.getElementById('overlay-zoom-increase');
+const overlayZoomDecreaseBtn = document.getElementById('overlay-zoom-decrease');
 const moveButtons = document.querySelectorAll('.move-controls button');
 const overlayMoveButtons = document.querySelectorAll('[data-overlay-move]');
 const imageUploadInput = document.getElementById('image-upload');
@@ -225,8 +229,15 @@ contentRadios.forEach(radio => {
   });
 });
 
+const updateZoomRange = () => {
+  if (zoomRange) {
+    zoomRange.value = String(Math.round(previewState.scale * 100));
+  }
+};
+
 const updateZoomDisplay = () => {
   zoomValueLabel.textContent = `${Math.round(previewState.scale * 100)}%`;
+  updateZoomRange();
 };
 
 const updateOverlayZoomDisplay = () => {
@@ -243,16 +254,62 @@ zoomRange.addEventListener('input', event => {
 
 updateZoomDisplay();
 
+const updateOverlayZoomRange = () => {
+  if (overlayZoomRange) {
+    overlayZoomRange.value = String(Math.round(previewState.overlayScale * 100));
+  }
+};
+
 if (overlayZoomRange) {
   overlayZoomRange.addEventListener('input', event => {
     const value = Number(event.target.value) || 0;
     previewState.overlayScale = value / 100;
     updateOverlayZoomDisplay();
+    updateOverlayZoomRange();
     applyOverlayTransform();
     drawPreview();
   });
 
   updateOverlayZoomDisplay();
+}
+
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+const changeZoom = delta => {
+  const newScale = clamp(previewState.scale + delta, 0.1, 3);
+  if (previewState.scale === newScale) return;
+  previewState.scale = newScale;
+  updateZoomDisplay();
+  drawPreview();
+};
+
+const changeOverlayZoom = delta => {
+  const newScale = clamp(previewState.overlayScale + delta, 0.5, 3);
+  if (previewState.overlayScale === newScale) return;
+  previewState.overlayScale = newScale;
+  updateOverlayZoomDisplay();
+  updateOverlayZoomRange();
+  applyOverlayTransform();
+  drawPreview();
+};
+
+const ZOOM_STEP_FINE = 0.02;
+const OVERLAY_ZOOM_STEP_FINE = 0.02;
+
+if (zoomIncreaseBtn) {
+  zoomIncreaseBtn.addEventListener('click', () => changeZoom(ZOOM_STEP_FINE));
+}
+
+if (zoomDecreaseBtn) {
+  zoomDecreaseBtn.addEventListener('click', () => changeZoom(-ZOOM_STEP_FINE));
+}
+
+if (overlayZoomIncreaseBtn) {
+  overlayZoomIncreaseBtn.addEventListener('click', () => changeOverlayZoom(OVERLAY_ZOOM_STEP_FINE));
+}
+
+if (overlayZoomDecreaseBtn) {
+  overlayZoomDecreaseBtn.addEventListener('click', () => changeOverlayZoom(-OVERLAY_ZOOM_STEP_FINE));
 }
 
 const MOVE_STEP = 6;

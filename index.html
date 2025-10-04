@@ -58,8 +58,10 @@
           <fieldset class="button-group" aria-label="Zoom da imagem">
             <legend>Zoom conteúdo</legend>
             <div class="zoom-controls">
+              <button type="button" id="zoom-decrease" class="zoom-button" aria-label="Diminuir zoom" title="Diminuir zoom">−</button>
               <input type="range" id="zoom-range" min="0" max="200" value="100" step="1" aria-label="Ajustar zoom" />
               <span id="zoom-value" aria-live="polite">100%</span>
+              <button type="button" id="zoom-increase" class="zoom-button" aria-label="Aumentar zoom" title="Aumentar zoom">+</button>
             </div>
           </fieldset>
 
@@ -79,8 +81,10 @@
           <fieldset class="button-group" aria-label="Zoom da área">
             <legend>Zoom da área:</legend>
             <div class="zoom-controls">
+              <button type="button" id="overlay-zoom-decrease" class="zoom-button" aria-label="Diminuir zoom da área" title="Diminuir zoom da área">−</button>
               <input type="range" id="overlay-zoom-range" min="50" max="200" value="100" step="1" aria-label="Ajustar zoom da área" />
               <span id="overlay-zoom-value" aria-live="polite">100%</span>
+              <button type="button" id="overlay-zoom-increase" class="zoom-button" aria-label="Aumentar zoom da área" title="Aumentar zoom da área">+</button>
             </div>
           </fieldset>
 
