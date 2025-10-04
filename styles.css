@@ -14,33 +14,32 @@ body {
   gap: 1.5rem;
 }
 
-.controls {
+.controls,
+.controls-secondary,
+.controls-terciary {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
   margin-bottom: 1.5rem;
   font-weight: 600;
   flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.controls {
+  gap: 1.5rem;
 }
 
 .controls-secondary {
-  display: flex;
-  align-items: center;
   gap: 1.25rem;
-  margin-bottom: 1.5rem;
-  font-weight: 600;
-  flex-wrap: wrap;
 }
 
-.controls select {
-  padding: 0.35rem 0.75rem;
-  border-radius: 6px;
-  border: 1px solid #444;
-  /* background: #fff; */
-  color: #222;
+.controls-terciary {
+  gap: 1.25rem;
 }
 
-.controls .radio-group {
+.controls fieldset,
+.controls-secondary fieldset,
+.controls-terciary fieldset {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -50,33 +49,25 @@ body {
   background: rgba(0, 0, 0, 0.05);
 }
 
-.controls .radio-group legend {
+.controls fieldset legend,
+.controls-secondary fieldset legend,
+.controls-terciary fieldset legend {
   font-size: 0.9rem;
   font-weight: 700;
   margin-right: 0.5rem;
 }
 
-.controls .radio-group label {
+.controls fieldset label,
+.controls-secondary fieldset label,
+.controls-terciary fieldset label {
   display: flex;
   align-items: center;
   gap: 0.35rem;
   font-weight: 500;
 }
 
-.controls .button-group {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  border: 1px solid #444;
-  border-radius: 8px;
+.controls-secondary fieldset {
   padding: 0.35rem 0.75rem;
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.controls .button-group legend {
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin-right: 0.5rem;
 }
 
 .zoom-controls {
@@ -96,42 +87,10 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-.zoom-controls button {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 1px solid #666;
-  background: transparent;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 700;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s ease, transform 0.1s ease;
-}
-
-.zoom-controls button:hover,
-.zoom-controls button:focus-visible {
-  background: rgba(0, 0, 0, 0.08);
-  outline: none;
-}
-
-.zoom-controls button:active {
-  transform: scale(0.92);
-}
-
 .move-controls {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.move-controls .move-row {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
 }
 
 .move-controls button {
@@ -184,84 +143,105 @@ section {
   background: rgba(255, 0, 0, 0.05);
 }
 
-#main-div .inner-div {
-  width: 80%;
-  height: 80%;
-  border: 3px solid green;
+#pipette-container {
   position: relative;
+  width: 100%;
+  height: 100%;
+  border: 2px dashed green;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: url("sar_sarpette_left.png") center/contain no-repeat;
 }
 
-#main-div .inner-div.orientation-left,
-#main-div .inner-div.orientation-right {
-  transform: none;
+#pipette-image,
+#pipette-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-#main-div .inner-div.view-side.orientation-left {
-  background-image: url("sar_sarpette_left.png");
-}
-
-#main-div .inner-div.view-side.orientation-right {
-  background-image: url("sar_sarpette_right.png");
-}
-
-#main-div .inner-div.view-top {
-  background-image: url("sar_sarpette_top.png");
+#pipette-image {
+  background-position: center;
+  background-repeat: no-repeat;
   background-size: contain;
 }
 
-#main-div .inner-div.view-top.orientation-right {
+#pipette-image.view-side.orientation-left {
+  background-image: url("sar_sarpette_left.png");
+}
+
+#pipette-image.view-side.orientation-right {
+  background-image: url("sar_sarpette_right.png");
+}
+
+#pipette-image.view-top {
+  background-image: url("sar_sarpette_top.png");
+}
+
+#pipette-image.view-top.orientation-right {
   transform: scaleX(-1);
 }
 
-#main-div .inner-div.view-top.orientation-left {
+#pipette-image.view-top.orientation-left {
   transform: none;
 }
 
-#main-div .inner-div .bat-preview {
-  width: min(45%, 320px);
-  aspect-ratio: 200 / 60; 
-  border-radius: 10px;
+#pipette-overlay {
+  pointer-events: none;
+  --overlay-scale: 1;
+  --overlay-width: clamp(180px, 45%, 320px);
+  --overlay-offset-x: 0;
+  --overlay-offset-y: 0;
+}
+
+#pipette-overlay.view-top.orientation-right {
+  transform: scaleX(-1);
+}
+
+#pipette-overlay.view-top.orientation-left {
+  transform: none;
+}
+
+#pipette-overlay .wrapper-crop {
   position: absolute;
-  overflow: hidden; 
   display: flex;
   align-items: center;
   justify-content: center;
+  width: var(--overlay-width);
+  aspect-ratio: 200 / 60;
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px dashed yellow;
 }
 
-/* Lado esquerdo - visão lado */
-#main-div .inner-div .bat-preview.orientation-left {
+#pipette-overlay.view-side.orientation-left .wrapper-crop {
   top: 28.5%;
   left: 13.5%;
+  transform-origin: center;
+  transform: translate(calc(var(--overlay-offset-x) * 1px), calc(var(--overlay-offset-y) * 1px)) scale(var(--overlay-scale));
 }
 
-/* Lado direito - visão lado */
-#main-div .inner-div .bat-preview.orientation-right {
+#pipette-overlay.view-side.orientation-right .wrapper-crop {
   top: 29%;
-  left: 45%;
+  right: 13.5%;
+  transform-origin: center;
+  transform: translate(calc(var(--overlay-offset-x) * 1px), calc(var(--overlay-offset-y) * 1px)) scale(var(--overlay-scale));
 }
 
-/* Lado esquerdo - visão topo */
-#main-div .inner-div .bat-preview.view-top.orientation-left {
+#pipette-overlay.view-top .wrapper-crop {
   top: 25.5%;
-  left: 12.5%;
+  left: 50%;
+  transform-origin: center;
+  transform: translate(calc(-50% + var(--overlay-offset-x) * 1px), calc(var(--overlay-offset-y) * 1px)) scale(var(--overlay-scale));
 }
 
-/* Lado direito - visão topo */
-#main-div .inner-div .bat-preview.view-top.orientation-right {
-  top: 25.5%;
-  left: 12.5%;
-}
-
-#main-div .inner-div .bat-preview canvas {
+#pipette-overlay canvas {
   width: 100%;
   height: 100%;
   display: block;
 }
-
 #main-div p {
   margin: 0;
   text-align: center;

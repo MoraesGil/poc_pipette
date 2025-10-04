@@ -1,12 +1,16 @@
-const inner = document.querySelector('.inner-div');
-const preview = document.querySelector('.bat-preview');
-const previewCanvas = document.getElementById('bat-preview-canvas');
+const pipetteContainer = document.getElementById('pipette-container');
+const pipetteImage = document.getElementById('pipette-image');
+const preview = document.getElementById('pipette-overlay');
+const previewCanvas = document.getElementById('image-canva');
 const orientationRadios = document.querySelectorAll('input[name="orientation"]');
 const viewRadios = document.querySelectorAll('input[name="view"]');
 const contentRadios = document.querySelectorAll('input[name="content"]');
 const zoomRange = document.getElementById('zoom-range');
 const zoomValueLabel = document.getElementById('zoom-value');
+const overlayZoomRange = document.getElementById('overlay-zoom-range');
+const overlayZoomValueLabel = document.getElementById('overlay-zoom-value');
 const moveButtons = document.querySelectorAll('.move-controls button');
+const overlayMoveButtons = document.querySelectorAll('[data-overlay-move]');
 
 const orientationValues = ['left', 'right'];
 const viewValues = ['side', 'top'];
@@ -28,21 +32,34 @@ const previewState = {
   scale: 1,
   offsetX: 0,
   offsetY: 0,
+  overlayScale: 1,
+  overlayOffsetX: 0,
+  overlayOffsetY: 0,
 };
 
 const applyOrientation = value => {
   previewState.orientation = value;
-  applyModifier([inner, preview], 'orientation', value, orientationValues);
+  applyModifier([pipetteContainer, pipetteImage, preview], 'orientation', value, orientationValues);
 };
 
 const applyView = value => {
   previewState.view = value;
-  applyModifier([inner, preview], 'view', value, viewValues);
+  applyModifier([pipetteContainer, pipetteImage, preview], 'view', value, viewValues);
+  applyOverlayTransform();
 };
 
 const applyContent = value => {
   previewState.content = value;
-  applyModifier([preview], 'content', value, ['image', 'color']);
+  const contentTargets = [preview?.querySelector('.wrapper-crop')].filter(Boolean);
+  applyModifier(contentTargets, 'content', value, ['image', 'color']);
+};
+
+const applyOverlayTransform = () => {
+  if (!preview) return;
+
+  preview.style.setProperty('--overlay-scale', previewState.overlayScale);
+  preview.style.setProperty('--overlay-offset-x', previewState.overlayOffsetX);
+  preview.style.setProperty('--overlay-offset-y', previewState.overlayOffsetY);
 };
 
 const getRadioValue = name => {
@@ -180,6 +197,7 @@ const updateState = () => {
   applyOrientation(orientation);
   applyView(view);
   applyContent(getRadioValue('content'));
+  applyOverlayTransform();
   drawPreview();
 };
 
@@ -205,6 +223,11 @@ const updateZoomDisplay = () => {
   zoomValueLabel.textContent = `${Math.round(previewState.scale * 100)}%`;
 };
 
+const updateOverlayZoomDisplay = () => {
+  if (!overlayZoomValueLabel) return;
+  overlayZoomValueLabel.textContent = `${Math.round(previewState.overlayScale * 100)}%`;
+};
+
 zoomRange.addEventListener('input', event => {
   const value = Number(event.target.value) || 0;
   previewState.scale = value / 100;
@@ -214,35 +237,48 @@ zoomRange.addEventListener('input', event => {
 
 updateZoomDisplay();
 
-const MOVE_STEP = 6;
+if (overlayZoomRange) {
+  overlayZoomRange.addEventListener('input', event => {
+    const value = Number(event.target.value) || 0;
+    previewState.overlayScale = value / 100;
+    updateOverlayZoomDisplay();
+    applyOverlayTransform();
+    drawPreview();
+  });
 
-const moveImage = direction => {
+  updateOverlayZoomDisplay();
+}
+
+const AREA_MOVE_STEP = 3;
+
+const moveOverlay = direction => {
   switch (direction) {
     case 'up':
-      previewState.offsetY -= MOVE_STEP;
+      previewState.overlayOffsetY -= AREA_MOVE_STEP;
       break;
     case 'down':
-      previewState.offsetY += MOVE_STEP;
+      previewState.overlayOffsetY += AREA_MOVE_STEP;
       break;
     case 'left':
-      previewState.offsetX -= MOVE_STEP;
+      previewState.overlayOffsetX -= AREA_MOVE_STEP;
       break;
     case 'right':
-      previewState.offsetX += MOVE_STEP;
+      previewState.overlayOffsetX += AREA_MOVE_STEP;
       break;
     case 'center':
-      previewState.offsetX = 0;
-      previewState.offsetY = 0;
+      previewState.overlayOffsetX = 0;
+      previewState.overlayOffsetY = 0;
       break;
   }
+  applyOverlayTransform();
   drawPreview();
 };
 
-moveButtons.forEach(button => {
+overlayMoveButtons.forEach(button => {
   button.addEventListener('click', event => {
-    const direction = event.currentTarget.getAttribute('data-move');
+    const direction = event.currentTarget.getAttribute('data-overlay-move');
     if (direction) {
-      moveImage(direction);
+      moveOverlay(direction);
     }
   });
 });

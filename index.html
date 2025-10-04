@@ -70,10 +70,35 @@
             </div>
           </fieldset>
         </div>
+
+        <div class="controls-terciary">
+          <fieldset class="button-group" aria-label="Zoom da área">
+            <legend>Zoom da área:</legend>
+            <div class="zoom-controls">
+              <input type="range" id="overlay-zoom-range" min="50" max="200" value="100" step="1" aria-label="Ajustar zoom da área" />
+              <span id="overlay-zoom-value" aria-live="polite">100%</span>
+            </div>
+          </fieldset>
+
+          <fieldset class="button-group" aria-label="Posição da área">
+            <legend>Posição da área:</legend>
+            <div class="move-controls area-move-controls">
+              <button type="button" data-overlay-move="left" aria-label="Mover área para a esquerda" title="Mover área para a esquerda">←</button>
+              <button type="button" data-overlay-move="up" aria-label="Mover área para cima" title="Mover área para cima">↑</button>
+              <button type="button" data-overlay-move="center" aria-label="Centralizar área" title="Centralizar área">•</button>
+              <button type="button" data-overlay-move="down" aria-label="Mover área para baixo" title="Mover área para baixo">↓</button>
+              <button type="button" data-overlay-move="right" aria-label="Mover área para a direita" title="Mover área para a direita">→</button>
+            </div>
+          </fieldset>
+        </div>
+
         <div id="main-div">
-          <div class="inner-div position-top orientation-left view-side">
-            <div class="bat-preview orientation-left view-side">
-              <canvas id="bat-preview-canvas"></canvas>
+          <div id="pipette-container" class="orientation-left view-side">
+            <div id="pipette-image" class="orientation-left view-side"></div>
+            <div id="pipette-overlay" class="orientation-left view-side">
+              <div class="wrapper-crop">
+                <canvas id="image-canva"></canvas>
+              </div>
             </div>
           </div>
         </div>
