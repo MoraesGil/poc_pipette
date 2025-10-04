@@ -255,7 +255,39 @@ if (overlayZoomRange) {
   updateOverlayZoomDisplay();
 }
 
+const MOVE_STEP = 6;
 const AREA_MOVE_STEP = 3;
+
+const moveImage = direction => {
+  switch (direction) {
+    case 'up':
+      previewState.offsetY -= MOVE_STEP;
+      break;
+    case 'down':
+      previewState.offsetY += MOVE_STEP;
+      break;
+    case 'left':
+      previewState.offsetX -= MOVE_STEP;
+      break;
+    case 'right':
+      previewState.offsetX += MOVE_STEP;
+      break;
+    case 'center':
+      previewState.offsetX = 0;
+      previewState.offsetY = 0;
+      break;
+  }
+  drawPreview();
+};
+
+moveButtons.forEach(button => {
+  button.addEventListener('click', event => {
+    const direction = event.currentTarget.getAttribute('data-move');
+    if (direction) {
+      moveImage(direction);
+    }
+  });
+});
 
 const moveOverlay = direction => {
   switch (direction) {
