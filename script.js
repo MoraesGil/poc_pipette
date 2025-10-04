@@ -388,24 +388,49 @@ const changeOverlayZoom = delta => {
 };
 
 const AREA_HEIGHT_STEP = 1;
-const AREA_HEIGHT_MIN = 10;
-const AREA_HEIGHT_MAX = 60;
+const AREA_HEIGHT_SLIDER_MIN = 0;
+const AREA_HEIGHT_SLIDER_MAX = 100;
+const AREA_HEIGHT_CSS_MIN = 0;
+const AREA_HEIGHT_CSS_MAX = 100;
+const MASK_MAX_HEIGHT_PX = 476;
+
+const mapRange = (value, inMin, inMax, outMin, outMax) => {
+  if (inMax - inMin === 0) return outMin;
+  const t = (value - inMin) / (inMax - inMin);
+  return outMin + t * (outMax - outMin);
+};
+
+const sliderToCssHeight = sliderValue => clamp(
+  mapRange(sliderValue, AREA_HEIGHT_SLIDER_MIN, AREA_HEIGHT_SLIDER_MAX, AREA_HEIGHT_CSS_MIN, AREA_HEIGHT_CSS_MAX),
+  AREA_HEIGHT_CSS_MIN,
+  AREA_HEIGHT_CSS_MAX
+);
+
+const cssHeightToSlider = cssValue => clamp(
+  mapRange(cssValue, AREA_HEIGHT_CSS_MIN, AREA_HEIGHT_CSS_MAX, AREA_HEIGHT_SLIDER_MIN, AREA_HEIGHT_SLIDER_MAX),
+  AREA_HEIGHT_SLIDER_MIN,
+  AREA_HEIGHT_SLIDER_MAX
+);
+
+const getMaskApproxPx = cssPercent => Math.round((cssPercent / AREA_HEIGHT_CSS_MAX) * MASK_MAX_HEIGHT_PX);
 
 const updateAreaHeightInputs = () => {
   if (areaHeightRange) {
-    areaHeightRange.value = String(Math.round(previewState.overlayHeightPercent));
+    areaHeightRange.value = String(Math.round(cssHeightToSlider(previewState.overlayHeightPercent)));
   }
   if (areaHeightValueLabel) {
-    areaHeightValueLabel.textContent = `${Math.round(previewState.overlayHeightPercent)}%`;
+    areaHeightValueLabel.textContent = `${previewState.overlayHeightPercent.toFixed(1)}% (~${getMaskApproxPx(previewState.overlayHeightPercent)}px)`;
   }
   if (areaHeightHint) {
     const overlayHeightEl = areaHeightHint.querySelector('[data-hint="overlay-height-percent"]');
-    if (overlayHeightEl) overlayHeightEl.textContent = `${previewState.overlayHeightPercent}%`;
+    if (overlayHeightEl) overlayHeightEl.textContent = `${previewState.overlayHeightPercent.toFixed(1)}% (~${getMaskApproxPx(previewState.overlayHeightPercent)}px)`;
   }
 };
 
 const changeAreaHeight = delta => {
-  const newHeight = clamp(previewState.overlayHeightPercent + delta, AREA_HEIGHT_MIN, AREA_HEIGHT_MAX);
+  const sliderValue = cssHeightToSlider(previewState.overlayHeightPercent);
+  const newSliderValue = clamp(sliderValue + delta, AREA_HEIGHT_SLIDER_MIN, AREA_HEIGHT_SLIDER_MAX);
+  const newHeight = sliderToCssHeight(newSliderValue);
   if (newHeight === previewState.overlayHeightPercent) return;
   previewState.overlayHeightPercent = newHeight;
   updateAreaHeightInputs();
@@ -413,7 +438,7 @@ const changeAreaHeight = delta => {
   drawPreview();
   if (areaHeightHint) {
     const overlayHeightEl = areaHeightHint.querySelector('[data-hint="overlay-height-percent"]');
-    if (overlayHeightEl) overlayHeightEl.textContent = `${previewState.overlayHeightPercent}%`;
+    if (overlayHeightEl) overlayHeightEl.textContent = `${previewState.overlayHeightPercent.toFixed(1)}% (~${getMaskApproxPx(previewState.overlayHeightPercent)}px)`;
   }
 };
 
@@ -475,8 +500,8 @@ setupHoldRepeater(maskedMoveButtons, 'data-masked-move', dir => moveMaskedConten
 
 if (areaHeightRange) {
   areaHeightRange.addEventListener('input', event => {
-    const value = Number(event.target.value);
-    previewState.overlayHeightPercent = clamp(value, AREA_HEIGHT_MIN, AREA_HEIGHT_MAX);
+    const sliderValue = Number(event.target.value);
+    previewState.overlayHeightPercent = sliderToCssHeight(sliderValue);
     updateAreaHeightInputs();
     applyOverlayTransform();
     drawPreview();

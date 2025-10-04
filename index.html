@@ -164,16 +164,17 @@
             <legend>Altura da área:</legend>
             <div class="zoom-controls height-controls">
               <button type="button" id="area-height-decrease" data-area-height-direction="decrease" class="zoom-button" aria-label="Diminuir altura da área" title="Diminuir altura da área">−</button>
-              <input type="range" id="area-height-range" min="10" max="60" value="24" step="1" aria-label="Ajustar altura da área" />
-              <span id="area-height-value" aria-live="polite">24%</span>
+              <input type="range" id="area-height-range" min="0" max="100" value="24" step="1" aria-label="Ajustar altura da área" />
+              <span id="area-height-value" aria-live="polite">24.0% (~171px)</span>
               <button type="button" id="area-height-increase" data-area-height-direction="increase" class="zoom-button" aria-label="Aumentar altura da área" title="Aumentar altura da área">+</button>
             </div>
             <div class="control-hint">
               state:
               <kbd>previewState.overlayHeightPercent</kbd>
               =
-              <span data-hint="overlay-height-percent">24%</span>
+              <span data-hint="overlay-height-percent">24.0% (~171px)</span>
             </div>
+            <div class="control-note">Faixa: 0% (0px) até 100% (~476px). Valor inicial sugerido: 24.0% (~171px).</div>
           </fieldset>
         </div>
 
