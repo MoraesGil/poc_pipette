@@ -109,6 +109,29 @@
           </fieldset>
         </div>
 
+        <div class="controls-quaternary">
+          <fieldset class="button-group" aria-label="Movimento da imagem mascarada">
+            <legend>Movimento mascarado:</legend>
+            <div class="move-controls masked-move-controls">
+              <button type="button" data-masked-move="left" aria-label="Mover conteúdo mascarado para a esquerda" title="Mover conteúdo mascarado para a esquerda">←</button>
+              <button type="button" data-masked-move="up" aria-label="Mover conteúdo mascarado para cima" title="Mover conteúdo mascarado para cima">↑</button>
+              <button type="button" data-masked-move="center" aria-label="Centralizar conteúdo mascarado" title="Centralizar conteúdo mascarado">•</button>
+              <button type="button" data-masked-move="down" aria-label="Mover conteúdo mascarado para baixo" title="Mover conteúdo mascarado para baixo">↓</button>
+              <button type="button" data-masked-move="right" aria-label="Mover conteúdo mascarado para a direita" title="Mover conteúdo mascarado para a direita">→</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="button-group" aria-label="Altura da área">
+            <legend>Altura da área:</legend>
+            <div class="zoom-controls height-controls">
+              <button type="button" id="area-height-decrease" class="zoom-button" aria-label="Diminuir altura da área" title="Diminuir altura da área">−</button>
+              <input type="range" id="area-height-range" min="10" max="60" value="24" step="1" aria-label="Ajustar altura da área" />
+              <span id="area-height-value" aria-live="polite">24%</span>
+              <button type="button" id="area-height-increase" class="zoom-button" aria-label="Aumentar altura da área" title="Aumentar altura da área">+</button>
+            </div>
+          </fieldset>
+        </div>
+
         <div id="main-div">
           <div id="pipette-container" class="orientation-left view-side">
             <div id="pipette-image" class="orientation-left view-side"></div>

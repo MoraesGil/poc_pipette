@@ -15,8 +15,13 @@ const overlayZoomIncreaseBtn = document.getElementById('overlay-zoom-increase');
 const overlayZoomDecreaseBtn = document.getElementById('overlay-zoom-decrease');
 const moveButtons = document.querySelectorAll('.move-controls button');
 const overlayMoveButtons = document.querySelectorAll('[data-overlay-move]');
+const maskedMoveButtons = document.querySelectorAll('[data-masked-move]');
 const imageUploadInput = document.getElementById('image-upload');
 const uploadStatus = document.getElementById('upload-status');
+const areaHeightRange = document.getElementById('area-height-range');
+const areaHeightValueLabel = document.getElementById('area-height-value');
+const areaHeightIncreaseBtn = document.getElementById('area-height-increase');
+const areaHeightDecreaseBtn = document.getElementById('area-height-decrease');
 
 const orientationValues = ['left', 'right'];
 const viewValues = ['side', 'top'];
@@ -38,9 +43,12 @@ const previewState = {
   scale: 1,
   offsetX: 0,
   offsetY: 0,
+  maskedOffsetX: 0,
+  maskedOffsetY: 0,
   overlayScale: 1,
   overlayOffsetX: 0,
   overlayOffsetY: 0,
+  overlayHeightPercent: 24,
 };
 
 const applyOrientation = value => {
@@ -66,6 +74,7 @@ const applyOverlayTransform = () => {
   preview.style.setProperty('--overlay-scale', previewState.overlayScale);
   preview.style.setProperty('--overlay-offset-x', previewState.overlayOffsetX);
   preview.style.setProperty('--overlay-offset-y', previewState.overlayOffsetY);
+  preview.style.setProperty('--overlay-height-percent', `${previewState.overlayHeightPercent}%`);
 };
 
 const getRadioValue = name => {
@@ -172,13 +181,17 @@ const drawPreview = () => {
     ctx.drawImage(activeImage, drawX, drawY, drawWidth, drawHeight);
     ctx.restore();
     ctx.globalCompositeOperation = 'destination-in';
-    ctx.drawImage(maskImage, maskX, maskY, maskWidth, maskHeight);
+    const maskDrawX = maskX + previewState.maskedOffsetX * scale;
+    const maskDrawY = maskY + previewState.maskedOffsetY * scale;
+    ctx.drawImage(maskImage, maskDrawX, maskDrawY, maskWidth, maskHeight);
     ctx.globalCompositeOperation = 'source-over';
   } else {
     ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
-    ctx.fillRect(maskX, maskY, maskWidth, maskHeight);
+    const maskDrawX = maskX + previewState.maskedOffsetX * scale;
+    const maskDrawY = maskY + previewState.maskedOffsetY * scale;
+    ctx.fillRect(maskDrawX, maskDrawY, maskWidth, maskHeight);
     ctx.globalCompositeOperation = 'destination-in';
-    ctx.drawImage(maskImage, maskX, maskY, maskWidth, maskHeight);
+    ctx.drawImage(maskImage, maskDrawX, maskDrawY, maskWidth, maskHeight);
     ctx.globalCompositeOperation = 'source-over';
   }
 
@@ -293,6 +306,28 @@ const changeOverlayZoom = delta => {
   drawPreview();
 };
 
+const AREA_HEIGHT_STEP = 1;
+const AREA_HEIGHT_MIN = 10;
+const AREA_HEIGHT_MAX = 60;
+
+const updateAreaHeightInputs = () => {
+  if (areaHeightRange) {
+    areaHeightRange.value = String(Math.round(previewState.overlayHeightPercent));
+  }
+  if (areaHeightValueLabel) {
+    areaHeightValueLabel.textContent = `${Math.round(previewState.overlayHeightPercent)}%`;
+  }
+};
+
+const changeAreaHeight = delta => {
+  const newHeight = clamp(previewState.overlayHeightPercent + delta, AREA_HEIGHT_MIN, AREA_HEIGHT_MAX);
+  if (newHeight === previewState.overlayHeightPercent) return;
+  previewState.overlayHeightPercent = newHeight;
+  updateAreaHeightInputs();
+  applyOverlayTransform();
+  drawPreview();
+};
+
 const ZOOM_STEP_FINE = 0.02;
 const OVERLAY_ZOOM_STEP_FINE = 0.02;
 
@@ -310,6 +345,59 @@ if (overlayZoomIncreaseBtn) {
 
 if (overlayZoomDecreaseBtn) {
   overlayZoomDecreaseBtn.addEventListener('click', () => changeOverlayZoom(-OVERLAY_ZOOM_STEP_FINE));
+}
+
+const MASKED_MOVE_STEP = 4;
+
+const moveMaskedContent = direction => {
+  switch (direction) {
+    case 'up':
+      previewState.maskedOffsetY -= MASKED_MOVE_STEP;
+      break;
+    case 'down':
+      previewState.maskedOffsetY += MASKED_MOVE_STEP;
+      break;
+    case 'left':
+      previewState.maskedOffsetX -= MASKED_MOVE_STEP;
+      break;
+    case 'right':
+      previewState.maskedOffsetX += MASKED_MOVE_STEP;
+      break;
+    case 'center':
+      previewState.maskedOffsetX = 0;
+      previewState.maskedOffsetY = 0;
+      break;
+  }
+  applyOverlayTransform();
+  drawPreview();
+};
+
+maskedMoveButtons.forEach(button => {
+  button.addEventListener('click', event => {
+    const direction = event.currentTarget.getAttribute('data-masked-move');
+    if (direction) {
+      moveMaskedContent(direction);
+    }
+  });
+});
+
+if (areaHeightRange) {
+  areaHeightRange.addEventListener('input', event => {
+    const value = Number(event.target.value);
+    previewState.overlayHeightPercent = clamp(value, AREA_HEIGHT_MIN, AREA_HEIGHT_MAX);
+    updateAreaHeightInputs();
+    applyOverlayTransform();
+    drawPreview();
+  });
+  updateAreaHeightInputs();
+}
+
+if (areaHeightIncreaseBtn) {
+  areaHeightIncreaseBtn.addEventListener('click', () => changeAreaHeight(AREA_HEIGHT_STEP));
+}
+
+if (areaHeightDecreaseBtn) {
+  areaHeightDecreaseBtn.addEventListener('click', () => changeAreaHeight(-AREA_HEIGHT_STEP));
 }
 
 const MOVE_STEP = 6;

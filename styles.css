@@ -16,7 +16,8 @@ body {
 
 .controls,
 .controls-secondary,
-.controls-terciary {
+.controls-terciary,
+.controls-quaternary {
   display: flex;
   align-items: center;
   margin-bottom: 1.5rem;
@@ -39,7 +40,8 @@ body {
 
 .controls fieldset,
 .controls-secondary fieldset,
-.controls-terciary fieldset {
+.controls-terciary fieldset,
+.controls-quaternary fieldset {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -92,7 +94,8 @@ body {
 
 .controls fieldset legend,
 .controls-secondary fieldset legend,
-.controls-terciary fieldset legend {
+.controls-terciary fieldset legend,
+.controls-quaternary fieldset legend {
   font-size: 0.9rem;
   font-weight: 700;
   margin-right: 0.5rem;
@@ -100,7 +103,8 @@ body {
 
 .controls fieldset label,
 .controls-secondary fieldset label,
-.controls-terciary fieldset label {
+.controls-terciary fieldset label,
+.controls-quaternary fieldset label {
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -187,6 +191,14 @@ body {
   transform: scale(0.92);
 }
 
+.masked-move-controls {
+  gap: 0.5rem;
+}
+
+.height-controls {
+  min-width: 260px;
+}
+
 main {
   width: 100%;
   display: flex;
@@ -259,9 +271,10 @@ section {
 #pipette-overlay {
   pointer-events: none;
   --overlay-scale: 1;
-  --overlay-width: clamp(180px, 45%, 320px);
+  --overlay-width: clamp(180px, 40%, 392px);
   --overlay-offset-x: 0;
   --overlay-offset-y: 0;
+  --overlay-height-percent: 24%;
 }
 
 #pipette-overlay.view-top.orientation-right {
@@ -282,6 +295,7 @@ section {
   overflow: hidden;
   border-radius: 10px;
   border: 1px dashed yellow;
+  height: var(--overlay-height-percent);
 }
 
 #pipette-overlay.view-side.orientation-left .wrapper-crop {
